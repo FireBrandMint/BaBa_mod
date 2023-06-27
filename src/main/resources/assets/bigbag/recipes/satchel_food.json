@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "BIB",
+    "X X",
+    " X "
+  ],
+  "key":
+  {
+    "B": {"item": "minecraft:iron_block"},
+    "I": {"item": "minecraft:iron_ingot"},
+    "X": {"item": "minecraft:leather"}
+  },
+
+  "result":
+  {
+    "item": "bigbag:food_satchel",
+    "count": 1
+  }
+}

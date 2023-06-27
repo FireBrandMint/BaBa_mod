@@ -228,6 +228,8 @@ public class Satchel extends BaseItem
         NBTTagList lore = new NBTTagList();
 
         lore.appendTag(new NBTTagString(this.ItemAmount + "\\" + InternalMaxQuantity()));
+        lore.appendTag(new NBTTagString("Rmb to store things in it,"));
+        lore.appendTag(new NBTTagString("shift + rmb to empty what you can."));
 
         display.setTag("Lore", lore);
 
