@@ -1,0 +1,11 @@
+For other mod:
+
+-1. Make cult crown that gives gameplay advantages, but isn't too overpowered as to replace everything else.
+   - Transmutation.
+   - Leveling up.
+   - Granting lackeys part of your power.
+
+0. Make gloves of channeling
+   - Switches between the super powers you have with left click.
+   - Becomes said super power when right clicked.
+   - Becomes the glove again after you right click with said super power.
