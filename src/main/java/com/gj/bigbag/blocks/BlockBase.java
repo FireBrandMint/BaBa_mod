@@ -1,6 +1,6 @@
 package com.gj.bigbag.blocks;
 
-import com.gj.bigbag.BigBag;
+import com.gj.bigbag.BaBa;
 import com.gj.bigbag.Items.IHasModel;
 import com.gj.bigbag.init.ItemInit;
 import net.minecraft.block.Block;
@@ -26,6 +26,6 @@ public class BlockBase extends Block implements IHasModel
     @Override
     public void RegisterModels()
     {
-        BigBag.Proxy.RegisterItemRenderer(Item.getItemFromBlock(this), 0, "inventory");
+        BaBa.Proxy.RegisterItemRenderer(Item.getItemFromBlock(this), 0, "inventory");
     }
 }

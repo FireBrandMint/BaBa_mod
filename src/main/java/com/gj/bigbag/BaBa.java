@@ -5,47 +5,37 @@ import com.gj.bigbag.blocks.BlockInit;
 import com.gj.bigbag.init.ItemInit;
 import com.gj.bigbag.proxy.CommonProxy;
 import net.minecraft.block.Block;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.stats.StatBase;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 @Mod.EventBusSubscriber
-@Mod(modid = BigBag.ModId, name = BigBag.Name, version = BigBag.Version)
-public class BigBag
+@Mod(modid = BaBa.ModId, name = BaBa.Name, version = BaBa.Version)
+public class BaBa
 {
-    public static final String ModId = "bigbag";
-    public static final String Name = "BigBag mod";
+    public static final String ModId = "baba";
+    public static final String Name = "BaBa mod";
 
     public static final String Version = "0.0.1";
-    public static final String Common = "com.gj.bigbag.proxy.CommonProxy";
-    public static final String Client = "com.gj.bigbag.proxy.ClientProxy";
+    public static final String Common = "com.gj.baba.proxy.CommonProxy";
+    public static final String Client = "com.gj.baba.proxy.ClientProxy";
 
     @Mod.Instance
-    public static BigBag Instance;
+    public static BaBa Instance;
 
-    @SidedProxy(clientSide = BigBag.Client, serverSide = BigBag.Common)
+    @SidedProxy(clientSide = BaBa.Client, serverSide = BaBa.Common)
     public static CommonProxy Proxy;
 
     @Mod.EventHandler
     public static void PreInit(FMLPreInitializationEvent event)
     {
-
+        
     }
 
     @Mod.EventHandler

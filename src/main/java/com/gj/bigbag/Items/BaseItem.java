@@ -1,6 +1,6 @@
 package com.gj.bigbag.Items;
 
-import com.gj.bigbag.BigBag;
+import com.gj.bigbag.BaBa;
 import com.gj.bigbag.init.ItemInit;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -14,8 +14,8 @@ public class BaseItem extends Item implements IHasModel
     {
         super();
 
-        setRegistryName(new ResourceLocation(BigBag.ModId, name));
-        setUnlocalizedName(BigBag.ModId + "." + name);
+        setRegistryName(new ResourceLocation(BaBa.ModId, name));
+        setUnlocalizedName(BaBa.ModId + "." + name);
 
         setCreativeTab(creativeTab);
 

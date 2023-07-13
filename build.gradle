@@ -10,9 +10,9 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle'
 
-version = "1.0.25"
-group = "com.gj.bigbag"
-archivesBaseName = "bigbag"
+version = "0.0.1"
+group = "com.gj.baba"
+archivesBaseName = "baba"
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
