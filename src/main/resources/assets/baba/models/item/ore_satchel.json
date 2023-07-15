@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "bigbag:items/ore_satchel"
+        "layer0": "baba:items/ore_satchel"
     }
 }

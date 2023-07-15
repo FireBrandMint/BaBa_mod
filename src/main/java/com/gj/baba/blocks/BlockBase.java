@@ -1,8 +1,8 @@
-package com.gj.bigbag.blocks;
+package com.gj.baba.blocks;
 
-import com.gj.bigbag.BaBa;
-import com.gj.bigbag.Items.IHasModel;
-import com.gj.bigbag.init.ItemInit;
+import com.gj.baba.BaBa;
+import com.gj.baba.Items.IHasModel;
+import com.gj.baba.init.ItemInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;

@@ -1,4 +1,4 @@
-package com.gj.bigbag.Items;
+package com.gj.baba.Items;
 
 public interface IHasModel
 {

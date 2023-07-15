@@ -1,7 +1,7 @@
-package com.gj.bigbag.Items;
+package com.gj.baba.Items;
 
-import com.gj.bigbag.Items.util.SatchelEntry;
-import com.gj.bigbag.Items.util.StringIntContainer;
+import com.gj.baba.Items.util.SatchelEntry;
+import com.gj.baba.Items.util.StringIntContainer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

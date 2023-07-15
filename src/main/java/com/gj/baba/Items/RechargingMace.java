@@ -1,4 +1,4 @@
-package com.gj.bigbag.Items;
+package com.gj.baba.Items;
 
 import com.google.common.collect.Multimap;
 import net.minecraft.creativetab.CreativeTabs;
@@ -10,9 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.util.DamageSource;
-import net.minecraftforge.common.util.EnumHelper;
 
 import java.util.Collection;
 import java.util.Optional;

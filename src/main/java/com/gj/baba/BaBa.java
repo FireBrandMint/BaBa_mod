@@ -1,10 +1,13 @@
-package com.gj.bigbag;
+package com.gj.baba;
 
-import com.gj.bigbag.Items.IHasModel;
-import com.gj.bigbag.blocks.BlockInit;
-import com.gj.bigbag.init.ItemInit;
-import com.gj.bigbag.proxy.CommonProxy;
+import com.gj.baba.Items.IHasModel;
+import com.gj.baba.blocks.BlockInit;
+import com.gj.baba.init.EntityInit;
+import com.gj.baba.init.ItemInit;
+import com.gj.baba.proxy.ClientProxy;
+import com.gj.baba.proxy.CommonProxy;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -35,7 +38,8 @@ public class BaBa
     @Mod.EventHandler
     public static void PreInit(FMLPreInitializationEvent event)
     {
-        
+        EntityInit.Initialize();
+        Proxy.InitializeEntityRenderer();
     }
 
     @Mod.EventHandler

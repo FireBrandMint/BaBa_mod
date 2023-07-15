@@ -1,4 +1,4 @@
-package com.gj.bigbag.blocks;
+package com.gj.baba.blocks;
 
 import net.minecraft.block.Block;
 
