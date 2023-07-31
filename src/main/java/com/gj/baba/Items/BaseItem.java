@@ -17,7 +17,7 @@ public class BaseItem extends Item implements IHasModel
         setRegistryName(new ResourceLocation(BaBa.ModId, name));
         setUnlocalizedName(BaBa.ModId + "." + name);
 
-        setCreativeTab(creativeTab);
+        if(creativeTab != null) setCreativeTab(creativeTab);
 
         ItemInit.ITEMS.add(this);
     }

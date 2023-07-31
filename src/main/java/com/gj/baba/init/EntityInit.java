@@ -20,7 +20,8 @@ public class EntityInit
 
     public static void Initialize()
     {
-        RegisterEntity("bullet_spike", BulletSpike.class, bulletSpikeID, 5, 0x5BBCF4, 0x43E88D);
+
+        RegisterEntity("bullet_spike", BulletSpike.class, bulletSpikeID, 50, 0x5BBCF4, 0x43E88D);
     }
 
     public static void RegisterRenderers()
@@ -28,7 +29,7 @@ public class EntityInit
         RenderingRegistry.registerEntityRenderingHandler(BulletSpike.class, new RenderBulletSpike.Factory());
     }
 
-    private static void RegisterEntity(String name, Class<? extends EntityLiving> entity, int id, int range, int eggColor1, int eggColor2)
+    private static void RegisterEntity(String name, Class<? extends Entity> entity, int id, int range, int eggColor1, int eggColor2)
     {
         EntityRegistry.registerModEntity(new ResourceLocation(BaBa.ModId + ":" + name), entity, name, id, BaBa.Instance, range, 1, true, eggColor1, eggColor2);
     }

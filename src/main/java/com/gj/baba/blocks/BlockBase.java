@@ -2,6 +2,7 @@ package com.gj.baba.blocks;
 
 import com.gj.baba.BaBa;
 import com.gj.baba.Items.IHasModel;
+import com.gj.baba.init.BlockInit;
 import com.gj.baba.init.ItemInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
