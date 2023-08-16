@@ -1,10 +1,9 @@
 package com.gj.baba;
 
 import com.gj.baba.Items.IHasModel;
-import com.gj.baba.init.BlockInit;
-import com.gj.baba.init.EntityInit;
-import com.gj.baba.init.ItemInit;
-import com.gj.baba.init.PotionInit;
+import com.gj.baba.capabilities.GasSystem;
+import com.gj.baba.components.substances.Substance;
+import com.gj.baba.init.*;
 import com.gj.baba.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -15,18 +14,21 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod.EventBusSubscriber
 @Mod(modid = BaBa.ModId, name = BaBa.Name, version = BaBa.Version)
@@ -45,6 +47,8 @@ public class BaBa
     @SidedProxy(clientSide = BaBa.Client, serverSide = BaBa.Common)
     public static CommonProxy Proxy;
 
+    public static int CurrSessionTick = 0;
+
     @Mod.EventHandler
     public static void PreInit(FMLPreInitializationEvent event)
     {
@@ -58,13 +62,20 @@ public class BaBa
     @Mod.EventHandler
     public static void Init(FMLInitializationEvent event)
     {
-
+        CapabilityInit.Initialize();
+        Substance.InitializeSubstances();
     }
 
     @Mod.EventHandler
     public static void PostInit(FMLPostInitializationEvent event)
     {
 
+    }
+
+    @SubscribeEvent
+    public static void OnAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
+    {
+        GasSystem.onAttachChunkCapabilities(event);
     }
 
     @SubscribeEvent
@@ -151,5 +162,54 @@ public class BaBa
                 event.setCanceled(true);
             }
         }
+    }
+
+    @Mod.EventHandler
+    public static void onStart(FMLServerStartedEvent event)
+    {
+        CurrSessionTick = 0;
+    }
+
+    @Mod.EventHandler
+    public static void onServerShutdown(FMLServerStoppedEvent event)
+    {
+
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event)
+    {
+        GasSystem.onServerTick(event);
+    }
+
+    @SubscribeEvent
+    public static void onWorldTick (TickEvent.WorldTickEvent event)
+    {
+        if(event.side == Side.CLIENT) return;
+
+        if(event.phase == TickEvent.Phase.START)
+        {
+            ++CurrSessionTick;
+        }
+    }
+
+    @SubscribeEvent
+    public static void chunkLoad(ChunkEvent.Load event)
+    {
+        if(event.getWorld().isRemote) return;
+        GasSystem.onChunkLoad(event);
+    }
+
+    @SubscribeEvent
+    public static void chunkSave(ChunkEvent.Save event)
+    {
+
+    }
+
+    @SubscribeEvent
+    public static void chunkUnload(ChunkEvent.Unload event)
+    {
+        if(event.getWorld().isRemote) return;
+        GasSystem.onChunkUnload(event);
     }
 }

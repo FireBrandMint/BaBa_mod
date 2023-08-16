@@ -1,30 +1,22 @@
 package com.gj.baba.blocks;
 
 import com.gj.baba.blocks.tile_entities.TileEntityGasses;
+import com.gj.baba.capabilities.GasSystem;
 import com.gj.baba.init.BlockInit;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockPistonBase;
-import net.minecraft.block.BlockRedstoneTorch;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -33,11 +25,20 @@ import java.util.Random;
 
 public class BlockGasses extends BlockBase
 {
-    static Random gasRandom = new Random(System.nanoTime());
+    public static Random gasRandom = new Random(System.nanoTime());
 
-    static int gasBus = 0;
+    private final BlockPos[] possiblePos = new BlockPos[]
+    {
+            new BlockPos(0, 1, 0),
+            new BlockPos(0, - 1, 0),
+            new BlockPos(1, 0, 0),
+            new BlockPos(-1, 0, 0),
+            new BlockPos(0, 0, 1),
+            new BlockPos(0, 0 , -1)
+    };
 
     public BlockGasses(String name, Material material, CreativeTabs tab) {
+
         super(name, material, tab);
     }
 
@@ -56,25 +57,23 @@ public class BlockGasses extends BlockBase
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random random)
     {
         if(worldIn.isRemote) return;
-        BlockPos bPos = pos;
 
-        BlockPos nextPos;
-
-        if(gasRandom.nextBoolean())
-            nextPos = bPos.add(gasRandom.nextInt(3) - 1, gasRandom.nextInt(3) - 1, 0);
-        else
-            nextPos = bPos.add(0, gasRandom.nextInt(3) - 1, gasRandom.nextInt(3) - 1);
-
-        if(worldIn.isBlockLoaded(nextPos) && worldIn.isAirBlock(nextPos))
+        if(worldIn.canSeeSky(pos))
         {
-            if(nextPos.getY() < worldIn.getPrecipitationHeight(nextPos).getY())
-                worldIn.setBlockState(nextPos, BlockInit.BLOCK_GAS.getDefaultState());
-
-            worldIn.setBlockState(bPos, Blocks.AIR.getDefaultState());
+            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+            return;
         }
-        else
+
+        for(int i = 0; i < possiblePos.length; ++i)
         {
-            this.scheduleUpdate(worldIn, pos);
+            BlockPos curr = pos.add(possiblePos[random.nextInt(possiblePos.length)]);
+
+            if(worldIn.isAirBlock(curr))
+            {
+                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+                worldIn.setBlockState(curr, BlockInit.BLOCK_GAS.getDefaultState());
+                break;
+            }
         }
 
         super.updateTick(worldIn, pos, state, random);
@@ -88,13 +87,17 @@ public class BlockGasses extends BlockBase
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
-        this.scheduleUpdate(worldIn, pos);
+        worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+
+        GasSystem.tryAddGas(worldIn, pos, new GasSystem.Gas());
 
         super.onBlockAdded(worldIn, pos, state);
     }
 
     public void OnBreak(World worldIn, BlockPos pos, IBlockState state)
     {
+        //GasProcess.removeGas(worldIn, pos);
+
         /*for(EntityPlayer player : worldIn.playerEntities)
         {
             player.sendMessage(new TextComponentString("Terminated."));
@@ -128,15 +131,6 @@ public class BlockGasses extends BlockBase
     {
         if(!worldIn.isRemote) OnBreak(worldIn, pos, state);
         super.breakBlock(worldIn, pos, state);
-    }
-
-    private void scheduleUpdate(World worldIn, BlockPos pos)
-    {
-        worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn) + gasBus);
-
-        ++gasBus;
-
-        if(gasBus > this.tickRate(worldIn)) gasBus = 0;
     }
 
     @Override
