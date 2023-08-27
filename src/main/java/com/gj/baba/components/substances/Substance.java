@@ -1,5 +1,8 @@
 package com.gj.baba.components.substances;
 
+import com.gj.baba.util.BabaUtil;
+import net.minecraft.util.math.MathHelper;
+
 import java.util.ArrayList;
 
 public class Substance
@@ -15,7 +18,6 @@ public class Substance
         initialized = true;
 
         PLASMA_ID = IndexSubstance(new SubstancePlasma());
-
         OXYGEN_ID = IndexSubstance(new SubstanceOxygen());
     }
 
@@ -33,40 +35,263 @@ public class Substance
         return substancesIndexed.get(substanceID).cloneSelf();
     }
 
+    public static int getSubstanceCount()
+    {
+        return substancesIndexed.size();
+    }
+
     //Object part of the class below.
     private boolean indexSet = false;
     private int index;
     /**
-     * Moles multiplied by 100.
+     * Moles
      */
-    public int moles = 0;
+    protected float moles = 0;
     /**
-     * Temperature in celcius multiplied by 100.
+     * Temperature in kelvin multiplied by 100.
      */
-    public int temperatureC = 0;
+    protected float temperatureK = 0;
+
+    double cachedPressure = 0;
+
+    boolean updated = true;
 
     protected Substance ()
     {
 
     }
 
-    /**
-     * returns volume * 100.
-     */
-    public long getPressure(int volume)
+    public void addToThis(Substance sub)
     {
-        long n = this.moles;
-        long r = getGasConstant();
-        long t = temperatureC;
-        long v = volume;
+        moles += sub.moles;
 
-        return (n * r * t) / v;
+        updated = true;
     }
 
-    //Original standard atmosphere temperature for the base gas constant.
-    public int getGasConstant()
+    public float getMoles()
     {
-        return 831;
+        return moles;
+    }
+
+    public float getTemperatureK ()
+    {
+        return temperatureK;
+    }
+
+    public void setMoles (float value)
+    {
+        updated = updated || moles != value;
+
+        moles = value;
+    }
+
+    public void setTemperatureK (float value)
+    {
+        updated = updated || temperatureK != value;
+
+        temperatureK = value;
+    }
+
+    /**
+     * Return pressure * 100.
+     * @param volume The volume in square meter * 100.
+     */
+    public double getPressure(float volume)
+    {
+        if(updated)
+        {
+            double n = this.moles;
+            double r = getGasConstant();
+            double t = temperatureK;
+            double v = volume;
+
+            updated = false;
+
+            double p = (n * r * t) / v;
+
+            cachedPressure = p;
+
+            return p;
+        }
+
+        return cachedPressure;
+    }
+
+    /**
+     * Return kpa * 100.
+     * * @param volume The volume in square meter * 100.
+     */
+    public double getKPA(float volume)
+    {
+        return getPressure(volume) * 0.001;
+    }
+
+    /**
+     *
+     * @param other
+     * @param volumethis volume of this in m2
+     * @param volumeOther volume of other substance in m2
+     * @return transfer amount in moles
+     */
+    public double getTransferAmount(Substance other, float volumethis, float volumeOther)
+    {
+        double otherPressure = other.getKPA(volumeOther);
+
+        return getTransferAmount(otherPressure, volumethis);
+    }
+
+    public double getTransferAmount(double pressureOther, float volumethis)
+    {
+        double thisPressure = getKPA(volumethis);
+        double otherPressure = pressureOther;
+
+        if(otherPressure >= thisPressure || thisPressure == 0.0) return 0.0;
+
+        if(otherPressure == 0.0) return thisPressure;
+        double d1 = thisPressure;
+        double d2 = otherPressure;
+
+        double transfer = (d1 / d2) * getTransferPerSuperiorKPA();
+
+        if(transfer > this.moles) transfer = this.moles;
+
+        return transfer;
+    }
+
+    public static double getTransferAmount(float molesThis, float pressureThis, float pressureOther, float transferPerKpa)
+    {
+        double thisPressure = pressureThis;
+        double otherPressure = pressureOther;
+
+        if(otherPressure >= thisPressure || thisPressure == 0.0) return 0.0;
+
+        if(otherPressure == 0.0) return thisPressure;
+        double d1 = thisPressure;
+        double d2 = otherPressure;
+
+        double transfer = (d1 - d2) * (transferPerKpa * 0.001);
+
+        if(transfer > molesThis) transfer = molesThis;
+
+        return transfer;
+    }
+
+    public static double getTransferPercentage (float molesThis, float pressureThis, float pressureOther, float transferPerKpa)
+    {
+        if(molesThis == 0.0) return 0.0;
+        if(pressureOther == 0.0) return molesThis;
+        double amount = getTransferAmount(molesThis, pressureThis, pressureOther, transferPerKpa);
+
+        return amount / molesThis;
+    }
+
+    public Substance slicePorcentage(double percentage)
+    {
+        Substance clone = this.cloneSelf();
+
+        clone.moles = (float)(this.moles * percentage);
+
+        this.moles -= this.moles * percentage;
+
+        return clone;
+    }
+
+    /**
+     *
+     * @param other
+     * @param volumethis volume of this in m2
+     * @param volumeOther volume of other substance in m2
+     * @return Did it transfer?
+     */
+    public boolean transferNaturallyTo(Substance other, float volumethis, float volumeOther)
+    {
+        if(other == null) return false;
+        if(other.getMoles() == 0.0)
+        {
+            other.setMoles(this.getMoles());
+            other.setTemperatureK(this.getTemperatureK());
+            this.setMoles(0);
+            this.setTemperatureK(0);
+            return true;
+        }
+
+        double transfer = getTransferAmount(other, volumethis, volumeOther);
+
+        if(transfer == 0.0) return false;
+
+        double molesAmount = this.moles * (transfer / this.getKPA(volumethis));
+
+        double finaltemp = finalMixtureHeat(
+                (float)molesAmount, this.temperatureK, this.getGramsPerMole(),
+                other.moles, other.temperatureK, other.getGramsPerMole()
+        );
+
+        this.setMoles((float)(this.moles - molesAmount));
+        other.setMoles((float)(other.moles + molesAmount));
+        other.setTemperatureK((float)(finaltemp + 273.15));
+
+        return true;
+    }
+
+    public static double finalMixtureHeat(
+            float molesThis, float heatThis, double gramMoleThis,
+            float molesOther, float heatOther, double gramMoleOther
+    )
+    {
+        double gramthis = molesThis * gramMoleThis;
+        double f1this = (heatThis - 273.15) * gramthis;
+        double gramother = molesOther * gramMoleOther;
+        double f1other = (heatOther - 273.15) * gramother;
+
+        double finaltemp = (f1this + f1other) / (gramthis + gramother);
+
+        return finaltemp;
+    }
+
+    //CONSTANTS BELOW
+    //Original standard atmosphere temperature * 100 for the base gas constant.
+    public double getGasConstant()
+    {
+        return 8.31;
+    }
+
+    public double getTransferPerSuperiorKPA()
+    {
+        return 0.5;
+    }
+
+    protected double heatCapacity ()
+    {
+        return 0.7;
+    }
+
+    public double getGramsPerMole()
+    {
+        return 28.96;
+    }
+
+    //CONSTANTS END
+
+    public void Serialize(BabaUtil.IntSerializer buff)
+    {
+        buff.write(index);
+        buff.write((int)((double)moles * 100.0));
+        buff.write((int)((double)temperatureK * 100.0));
+    }
+
+    protected void deserialize (BabaUtil.IntDeserializer buff)
+    {
+
+    }
+
+    public static Substance Deserialize(BabaUtil.IntDeserializer buff)
+    {
+        Substance sub = getSubstance(buff.read());
+        sub.setMoles(buff.read() * 0.01f);
+        sub.setTemperatureK(buff.read() * 0.01f);
+
+        sub.deserialize(buff);
+        return sub;
     }
 
     private void setID(int i)
@@ -93,10 +318,12 @@ public class Substance
         substance.indexSet = indexSet;
         substance.index = index;
         substance.moles = moles;
-        substance.temperatureC = temperatureC;
+        substance.temperatureK = temperatureK;
+
+        substance.updated = true;
     }
 
-    private Substance cloneSelf()
+    public Substance cloneSelf()
     {
         Substance self = instantiate();
         copyContentsTo(self);

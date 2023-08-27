@@ -2,6 +2,7 @@ package com.gj.baba.blocks;
 
 import com.gj.baba.blocks.tile_entities.TileEntityGasses;
 import com.gj.baba.capabilities.GasSystem;
+import com.gj.baba.components.substances.Substance;
 import com.gj.baba.init.BlockInit;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -89,7 +90,15 @@ public class BlockGasses extends BlockBase
     {
         worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
 
-        GasSystem.tryAddGas(worldIn, pos, new GasSystem.Gas());
+        GasSystem.Gas gas = new GasSystem.Gas();
+
+        Substance sub = Substance.getSubstance(Substance.OXYGEN_ID);
+        sub.setMoles(gasRandom.nextFloat() * 20f);
+        sub.setTemperatureK(gasRandom.nextFloat() * 293.15f);
+
+        gas.mixContents(sub);
+
+        GasSystem.tryAddGas(worldIn, pos, gas);
 
         super.onBlockAdded(worldIn, pos, state);
     }

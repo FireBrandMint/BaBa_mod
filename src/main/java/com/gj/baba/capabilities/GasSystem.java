@@ -2,12 +2,13 @@ package com.gj.baba.capabilities;
 
 
 import com.gj.baba.BaBa;
+import com.gj.baba.components.substances.Substance;
 import com.gj.baba.libraries.tinymap.TinyMapBuilder;
 import com.gj.baba.util.BabaUtil;
 import com.gj.baba.util.GChunkBlockCoords;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -93,19 +94,215 @@ public class GasSystem
 
     public static class Gas
     {
-        public void addContentsTo(Gas gas)
-        {
+        int count = 0;
+        Substance[] subs = new Substance[Substance.getSubstanceCount()];
 
+        boolean updated = true;
+        boolean listUpdated = true;
+
+        double gramPerMole = 0.0;
+        double kpa = 0.0;
+        double moles = 0.0;
+        double temperatureK = 0.0;
+
+        double transferPerKpa = 0.0;
+
+        public void mixContents(Substance sub)
+        {
+            double heat = Substance.finalMixtureHeat(
+                    (float)this.getMoles(), (float)this.temperatureK, this.getGramPerMole(),
+                    sub.getMoles(), sub.getTemperatureK(), sub.getGramsPerMole()
+            );
+
+            this.setTemperature(heat);
+
+            this.addContentsTo(sub);
+        }
+
+        public void transferNaturallyTo(Gas gas)
+        {
+            float molesThis = (float)this.getMoles();
+
+            double percentage = Substance.getTransferPercentage(
+                    molesThis, (float)(this.getKPA() * 0.001),
+                    (float)(gas.getKPA() * 0.001), (float)this.getTransferPerKpa());
+
+            if(percentage == 0.0) return;
+
+            double finalHeat = Substance.finalMixtureHeat(molesThis, (float)this.temperatureK, this.getGramPerMole(),
+                    (float)gas.getMoles(), (float)gas.temperatureK, gas.getGramPerMole());
+
+            for(int i = 0; i < count; ++i)
+            {
+                Substance curr = this.subs[i].cloneSelf();
+                Substance clone = curr.cloneSelf();
+                curr.setMoles((float)(curr.getMoles() * (1.0 - percentage)));
+                clone.setMoles((float)(clone.getMoles() * percentage));
+                gas.addContentsTo(clone);
+            }
+            this.updated = true;
+            gas.setTemperature(finalHeat);
+        }
+
+        private void addContentsTo(Substance gas)
+        {
+            boolean failure = true;
+
+            for(int i = 0; i < count; ++i)
+            {
+                Substance curr = subs[i];
+                if(curr.getID() == gas.getID())
+                {
+                    curr.addToThis(gas);
+
+                    failure = false;
+                }
+            }
+
+            if(failure)
+            {
+                this.addData(gas);
+            }
+
+            updated = true;
+        }
+
+        public double getGramPerMole()
+        {
+            onListUpdated();
+
+            return gramPerMole;
+        }
+
+        public double getTransferPerKpa ()
+        {
+            onListUpdated();
+            return transferPerKpa;
+        }
+
+        private void onListUpdated()
+        {
+            if(listUpdated)
+            {
+                double gm = 0.0;
+                double gpm = 0.0;
+
+                if(count == 0)
+                {
+                    gramPerMole = 0.0;
+                    transferPerKpa = 0.0;
+                    listUpdated = false;
+                    return;
+                }
+
+                for(int i = 0; i < count; ++i)
+                {
+                    Substance sub = subs[i];
+                    gm += sub.getGramsPerMole();
+                    gpm += sub.getTransferPerSuperiorKPA();
+                }
+
+                gramPerMole = gm / count;
+                transferPerKpa = gpm / count;
+
+                listUpdated = false;
+            }
+        }
+
+        public double getKPA()
+        {
+            updateVars();
+
+            return kpa;
+        }
+
+        public double getMoles()
+        {
+            updateVars();
+            return moles;
+        }
+
+        public void setTemperature(double kelvin)
+        {
+            float k = (float) kelvin;
+            for(int i = 0; i < count; ++i)
+            {
+                subs[i].setTemperatureK(k);
+            }
+
+            temperatureK = kelvin;
+        }
+
+        private void updateVars()
+        {
+            if(!updated) return;
+            double _kpa = 0.0;
+            double _moles = 0.0;
+
+            if(count == 0)
+            {
+                moles = 0.0;
+                kpa = 0.0;
+                updated = false;
+                return;
+            }
+
+            for(int i = 0; i < count; ++i)
+            {
+                Substance curr = subs[i];
+                _moles += curr.getMoles();
+                _kpa += curr.getKPA(1.0f);
+            }
+
+            moles = _moles;
+            kpa = _kpa;
+
+            updated = false;
         }
 
         public void serialize(BabaUtil.IntSerializer buf)
         {
-
+            buf.write((int)(temperatureK * 100.0));
+            buf.write(count);
+            for(int i = 0; i < count; ++i)
+            {
+                subs[i].Serialize(buf);
+            }
         }
 
         public static Gas deserialize(BabaUtil.IntDeserializer buf)
         {
-            return new Gas();
+            Gas gas = new Gas();
+
+            double temperature = buf.read() * 0.01;
+            int _count = buf.read();
+            for(int i = 0; i < _count; ++i)
+            {
+                 gas.addContentsTo(Substance.Deserialize(buf));
+            }
+
+            return gas;
+        }
+
+        private void addData(Substance sub)
+        {
+            subs[count] = sub;
+
+            listUpdated = true;
+
+            ++count;
+        }
+
+        private void removeData(int substanceId)
+        {
+            for(int i = 0; i < count - 1; ++i)
+            {
+                subs[i] = subs[i + 1];
+            }
+
+            listUpdated = true;
+
+            --count;
         }
     }
 
@@ -209,18 +406,32 @@ public class GasSystem
             int chunkZ = chunkIn.z;
 
             BlockPos currPos = GChunkBlockCoords.toNormalCoords(key, chunkX, chunkZ);
+            if(currPos.getY() > world.getHeight(currPos.getX(), currPos.getZ()))
+            {
+                gasMap.remove(key);
+                cache.remove(ind);
+
+                return;
+            }
+
             BlockPos nextPos = currPos.add(x,y,z);
+            if(world.isBlockFullCube(nextPos) || world.getBlockState(nextPos).getBlock() instanceof BlockLiquid)
+                return;
 
             int nextChunkX = BabaUtil.toChunkFormat(x);
             int nextChunkZ = BabaUtil.toChunkFormat(z);
 
             if(chunkX == nextChunkX & chunkZ == nextChunkZ)
             {
-                if(!hasGas(nextPos))
+                if(hasGas(nextPos))
+                {
+                    value.transferNaturallyTo(this.get(nextPos));
+                }
+                else
                 {
                     gasMap.remove(key);
                     cache.remove(ind);
-                    set(world, nextPos, value);
+                    this.set(world, nextPos, value);
 
                     success = true;
                 }
@@ -230,20 +441,25 @@ public class GasSystem
                 Chunk nextChunk = world.getChunkFromBlockCoords(nextPos);
                 IGasMatrix nextMatrix = nextChunk.getCapability(GAS_CAPABILITY, capaSide);
 
-                if(!nextMatrix.hasGas(nextPos))
+                if(nextMatrix.hasGas(nextPos))
+                {
+                    value.transferNaturallyTo(nextMatrix.get(nextPos));
+
+                    chunkIn.markDirty();
+                }
+                else
                 {
                     cache.remove(ind);
                     gasMap.remove(key);
                     chunkIn.markDirty();
                     nextMatrix.set(world, nextPos, value);
-
-                    success = true;
                 }
+
+                success = true;
             }
 
             if(success)
             {
-
                 BabaUtil.broadcastMessage(world,"Air moved to: " + nextPos.toString());
             }
         }
@@ -265,7 +481,7 @@ public class GasSystem
 
             if(gasMap.containsKey(pos))
             {
-                gas.addContentsTo(gasMap.get(GChunkBlockCoords.fromNormalCoords(pos, pos.getX() >> 4, pos.getZ() >> 4)));
+                //gas.addContentsTo(gasMap.get(GChunkBlockCoords.fromNormalCoords(pos, pos.getX() >> 4, pos.getZ() >> 4)));
             }
             else
             {
