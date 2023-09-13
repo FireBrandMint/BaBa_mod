@@ -1,7 +1,6 @@
 package com.gj.baba.components.substances;
 
 import com.gj.baba.util.BabaUtil;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
 
@@ -12,20 +11,23 @@ public class Substance
     private static ArrayList<Substance> substancesIndexed = new ArrayList<Substance>(20);
     public static int PLASMA_ID;
     public static int OXYGEN_ID;
+    public static int DEBUG_ID;
     public static void InitializeSubstances()
     {
         if(initialized) throw new RuntimeException("FUCK YOU, DO NOT USE THIS METHOD, ARE YOU STUPID?");
         initialized = true;
 
-        PLASMA_ID = IndexSubstance(new SubstancePlasma());
-        OXYGEN_ID = IndexSubstance(new SubstanceOxygen());
+        DEBUG_ID = IndexSubstance(new Substance(), "debug");
+        PLASMA_ID = IndexSubstance(new SubstancePlasma(), "plasma");
+        OXYGEN_ID = IndexSubstance(new SubstanceOxygen(), "oxygen");
     }
 
-    private static int IndexSubstance(Substance sub)
+    private static int IndexSubstance(Substance sub, String name)
     {
         int toReturn = substancesIndexed.size();
 
         sub.setID(toReturn);
+        sub.setName(name);
         substancesIndexed.add(sub);
         return toReturn;
     }
@@ -43,6 +45,7 @@ public class Substance
     //Object part of the class below.
     private boolean indexSet = false;
     private int index;
+    private String name;
     /**
      * Moles
      */
@@ -61,7 +64,7 @@ public class Substance
 
     }
 
-    public void addToThis(Substance sub)
+    public void addMolesToThis(Substance sub)
     {
         moles += sub.moles;
 
@@ -80,6 +83,7 @@ public class Substance
 
     public void setMoles (float value)
     {
+        value = value < 0f ? 0f : value;
         updated = updated || moles != value;
 
         moles = value;
@@ -87,6 +91,8 @@ public class Substance
 
     public void setTemperatureK (float value)
     {
+        value = value < 0f ? 0f : value;
+
         updated = updated || temperatureK != value;
 
         temperatureK = value;
@@ -94,10 +100,12 @@ public class Substance
 
     /**
      * Return pressure * 100.
-     * @param volume The volume in square meter * 100.
+     * @param volume The volume in square meter.
      */
     public double getPressure(float volume)
     {
+        if(volume <= 0f) throw new RuntimeException("Volume cannot be 0 or lower.");
+
         if(updated)
         {
             double n = this.moles;
@@ -151,17 +159,17 @@ public class Substance
         double d1 = thisPressure;
         double d2 = otherPressure;
 
-        double transfer = (d1 / d2) * getTransferPerSuperiorKPA();
+        double transfer = (1.0 - Math.min(d2 / d1, 1.0)) * this.moles;
 
         if(transfer > this.moles) transfer = this.moles;
 
         return transfer;
     }
 
-    public static double getTransferAmount(float molesThis, float pressureThis, float pressureOther, float transferPerKpa)
+    public static double getTransferAmount(float molesThis, float kpaThis, float kpaOther)
     {
-        double thisPressure = pressureThis;
-        double otherPressure = pressureOther;
+        double thisPressure = kpaThis;
+        double otherPressure = kpaOther;
 
         if(otherPressure >= thisPressure || thisPressure == 0.0) return 0.0;
 
@@ -169,18 +177,18 @@ public class Substance
         double d1 = thisPressure;
         double d2 = otherPressure;
 
-        double transfer = (d1 - d2) * (transferPerKpa * 0.001);
+        double transfer = (1.0 - Math.min(d2 / d1, 1.0)) * molesThis;
 
         if(transfer > molesThis) transfer = molesThis;
 
         return transfer;
     }
 
-    public static double getTransferPercentage (float molesThis, float pressureThis, float pressureOther, float transferPerKpa)
+    public static double getTransferPercentage (float molesThis, float kpaThis, float kpaOther)
     {
         if(molesThis == 0.0) return 0.0;
-        if(pressureOther == 0.0) return molesThis;
-        double amount = getTransferAmount(molesThis, pressureThis, pressureOther, transferPerKpa);
+        if(kpaOther == 0.0) return molesThis;
+        double amount = getTransferAmount(molesThis, kpaThis, kpaOther);
 
         return amount / molesThis;
     }
@@ -189,9 +197,11 @@ public class Substance
     {
         Substance clone = this.cloneSelf();
 
-        clone.moles = (float)(this.moles * percentage);
+        float result = (float)(this.moles * percentage);
 
-        this.moles -= this.moles * percentage;
+        clone.moles = result;
+
+        this.moles -= result;
 
         return clone;
     }
@@ -245,7 +255,7 @@ public class Substance
 
         double finaltemp = (f1this + f1other) / (gramthis + gramother);
 
-        return finaltemp;
+        return finaltemp + 273.15;
     }
 
     //CONSTANTS BELOW
@@ -257,7 +267,7 @@ public class Substance
 
     public double getTransferPerSuperiorKPA()
     {
-        return 0.5;
+        return 0.1;
     }
 
     protected double heatCapacity ()
@@ -294,6 +304,16 @@ public class Substance
         return sub;
     }
 
+    private void setName(String str)
+    {
+        name = str;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
     private void setID(int i)
     {
         if(indexSet) throw new RuntimeException("Can't set index more than 1 time.");
@@ -317,6 +337,7 @@ public class Substance
     {
         substance.indexSet = indexSet;
         substance.index = index;
+        substance.name = name;
         substance.moles = moles;
         substance.temperatureK = temperatureK;
 

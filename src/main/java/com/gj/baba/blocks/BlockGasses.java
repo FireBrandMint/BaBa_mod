@@ -57,25 +57,6 @@ public class BlockGasses extends BlockBase
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random random)
     {
-        if(worldIn.isRemote) return;
-
-        if(worldIn.canSeeSky(pos))
-        {
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-            return;
-        }
-
-        for(int i = 0; i < possiblePos.length; ++i)
-        {
-            BlockPos curr = pos.add(possiblePos[random.nextInt(possiblePos.length)]);
-
-            if(worldIn.isAirBlock(curr))
-            {
-                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-                worldIn.setBlockState(curr, BlockInit.BLOCK_GAS.getDefaultState());
-                break;
-            }
-        }
 
         super.updateTick(worldIn, pos, state, random);
     }
@@ -88,17 +69,23 @@ public class BlockGasses extends BlockBase
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
-        worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
-
         GasSystem.Gas gas = new GasSystem.Gas();
 
+        worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+
         Substance sub = Substance.getSubstance(Substance.OXYGEN_ID);
-        sub.setMoles(gasRandom.nextFloat() * 20f);
-        sub.setTemperatureK(gasRandom.nextFloat() * 293.15f);
+        sub.setMoles(gasRandom.nextFloat() * 10f);
+        sub.setTemperatureK(273.15f + gasRandom.nextFloat() * 20.15f);
 
-        gas.mixContents(sub);
+        Substance sub2 = Substance.getSubstance(Substance.PLASMA_ID);
+        sub2.setMoles(gasRandom.nextFloat() * 20f);
+        sub2.setTemperatureK(273.15f + gasRandom.nextFloat() * 20.15f);
 
-        GasSystem.tryAddGas(worldIn, pos, gas);
+        gas.mixWithSelf(sub);
+
+        gas.mixWithSelf(sub2);
+
+        GasSystem.tryInjectGas(worldIn, pos, gas);
 
         super.onBlockAdded(worldIn, pos, state);
     }

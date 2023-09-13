@@ -75,7 +75,7 @@ public class BaBa
 
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void OnAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
     {
         GasSystem.onAttachChunkCapabilities(event);

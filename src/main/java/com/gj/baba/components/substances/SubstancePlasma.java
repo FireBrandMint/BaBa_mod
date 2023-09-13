@@ -8,7 +8,8 @@ public class SubstancePlasma extends Substance
     }
 
     @Override
-    protected Substance instantiate() {
+    protected Substance instantiate()
+    {
         return new SubstancePlasma();
     }
 }
