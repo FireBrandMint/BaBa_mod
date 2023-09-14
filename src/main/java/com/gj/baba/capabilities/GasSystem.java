@@ -101,14 +101,14 @@ public class GasSystem
         return world.getChunkFromBlockCoords(pos).getCapability(GAS_CAPABILITY, capaSide);
     }
 
-    public static void onAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
+    public static void OnAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
     {
         GasSystem.GasProvider provider = new GasSystem.GasProvider(event.getObject());
 
         event.addCapability(new ResourceLocation(BaBa.ModId, "ggas"), provider);
     }
 
-    public static void onServerTick(TickEvent.ServerTickEvent event)
+    public static void OnServerTick(TickEvent.ServerTickEvent event)
     {
         for(int i = 0; i < matrixMapsToCache.size(); ++i)
         {
@@ -128,14 +128,14 @@ public class GasSystem
         chunksToTick.forEach(TickInducer.INSTANCE);
     }
 
-    public static void onChunkLoad(ChunkEvent.Load event)
+    public static void OnChunkLoad(ChunkEvent.Load event)
     {
         if(event.getChunk().getWorld().isRemote) return;
         Chunk chunk = event.getChunk();
         chunksToTick.put(chunk.getPos(), chunk);
     }
 
-    public static void onChunkUnload(ChunkEvent.Unload event)
+    public static void OnChunkUnload(ChunkEvent.Unload event)
     {
         if(event.getChunk().getWorld().isRemote) return;
         Chunk chunk = event.getChunk();
@@ -617,39 +617,6 @@ public class GasSystem
             BlockPos currPos = GChunkBlockCoords.toNormalCoords(key, chunkX, chunkZ);
             if(this.isVacuum(world, currPos))
             {
-                for(int i = 0; i < 6; ++i)
-                {
-                    int xr = 0;
-                    int yr = 0;
-                    int zr = 0;
-
-                    switch (i)
-                    {
-                        case 0: xr = 1; break;
-                        case 1: xr = -1; break;
-                        case 2: yr = -1; break;
-                        case 3: yr = 1; break;
-                        case 4: zr = 1; break;
-                        case 5: zr = -1;break;
-                    }
-
-                    int nextChunkX = BabaUtil.toChunkFormat(xr + currPos.getX());
-                    int nextChunkZ = BabaUtil.toChunkFormat(zr + currPos.getZ());
-
-                    BlockPos removePos = currPos.add(xr, yr, zr);
-
-                    if(chunkX == nextChunkX & chunkZ == nextChunkZ)
-                    {
-                       set(world, removePos, null);
-                    }
-                    else if(world.isBlockLoaded(removePos))
-                    {
-                        Chunk nextChunk = world.getChunkFromBlockCoords(removePos);
-                        IGasMatrix nextMatrix = nextChunk.getCapability(GAS_CAPABILITY, capaSide);
-
-                        set(world, removePos, null);
-                    }
-                }
                 gasMap.remove(key);
                 return;
             }

@@ -12,10 +12,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.InputUpdateEvent;
@@ -78,7 +75,7 @@ public class BaBa
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void OnAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
     {
-        GasSystem.onAttachChunkCapabilities(event);
+        GasSystem.OnAttachChunkCapabilities(event);
     }
 
     @SubscribeEvent
@@ -182,7 +179,7 @@ public class BaBa
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event)
     {
-        GasSystem.onServerTick(event);
+        GasSystem.OnServerTick(event);
     }
 
     @SubscribeEvent
@@ -200,7 +197,7 @@ public class BaBa
     public static void chunkLoad(ChunkEvent.Load event)
     {
         if(event.getWorld().isRemote) return;
-        GasSystem.onChunkLoad(event);
+        GasSystem.OnChunkLoad(event);
     }
 
     @SubscribeEvent
@@ -213,6 +210,6 @@ public class BaBa
     public static void chunkUnload(ChunkEvent.Unload event)
     {
         if(event.getWorld().isRemote) return;
-        GasSystem.onChunkUnload(event);
+        GasSystem.OnChunkUnload(event);
     }
 }
