@@ -57,6 +57,7 @@ public class GasSystem
         return success;
     }
 
+    @Nullable
     public static Gas tryGetGas(World world, BlockPos pos)
     {
         IGasMatrix matrix = getMatrix(world, pos);
@@ -65,6 +66,33 @@ public class GasSystem
         {
             return matrix.get(pos);
         }
+        return null;
+    }
+
+    @Nullable
+    public static Gas removeGas(World world, BlockPos pos)
+    {
+        IGasMatrix matrix = getMatrix(world, pos);
+        boolean success = world.isBlockLoaded(pos) && world.isAirBlock(pos);
+        if(success)
+        {
+            Gas curr = matrix.get(pos);
+            if(curr != null) matrix.set(world, pos, null);
+            return curr;
+        }
+
+        return null;
+    }
+    @Nullable
+    public static Substance removeSubstanceFromGas(World world, BlockPos pos, int substanceId)
+    {
+        IGasMatrix matrix = getMatrix(world, pos);
+        boolean success = world.isBlockLoaded(pos) && world.isAirBlock(pos);
+        if(success)
+        {
+            return matrix.get(pos).removeSubstanceAndRetrieve(substanceId);
+        }
+
         return null;
     }
 
@@ -130,7 +158,7 @@ public class GasSystem
     public static class Gas
     {
         int count = 0;
-        Substance[] subs = new Substance[Substance.getSubstanceCount()];
+        Substance[] subs = new Substance[3];
 
         boolean updated = true;
 
@@ -346,6 +374,11 @@ public class GasSystem
             {
                 Substance curr = subs[i];
                 float currMoles = curr.getMoles();
+                if(currMoles <= 0f)
+                {
+                    removeData(i);
+                    --i;
+                }
                 _moles += currMoles;
                 gm += currMoles * curr.getGramsPerMole();
                 _kpa += curr.getKPA(1.0f);
@@ -426,17 +459,65 @@ public class GasSystem
 
             ++count;
         }
-
-        private void removeData(int substanceId)
+        private void removeData(int index)
         {
-            for(int i = 0; i < count - 1; ++i)
+            if(count == 0) return;
+            int lastElement = count - 1;
+            for(int i = index; i < lastElement; ++i)
             {
                 subs[i] = subs[i + 1];
             }
 
-            updated = true;
-
+            subs[lastElement] = null;
             --count;
+            updated = true;
+        }
+
+        /**
+         * Returns true if substance existed.
+         * @param substanceId
+         * @return
+         */
+        public boolean removeSubstance(int substanceId)
+        {
+            boolean isFound = false;
+            int index = -1;
+            for(int i = 0; i < count; ++i)
+            {
+                if(subs[i].getID() == substanceId)
+                {
+                    isFound = true;
+                    index = i;
+                    break;
+                }
+            }
+
+            if(isFound)
+                removeData(index);
+
+            return isFound;
+        }
+
+        public Substance removeSubstanceAndRetrieve(int substanceId)
+        {
+            boolean isFound = false;
+            int index = -1;
+            Substance s = null;
+            for(int i = 0; i < count; ++i)
+            {
+                if(subs[i].getID() == substanceId)
+                {
+                    isFound = true;
+                    index = i;
+                    s = subs[i];
+                    break;
+                }
+            }
+
+            if(isFound)
+                removeData(index);
+
+            return s;
         }
     }
 
