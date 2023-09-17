@@ -44,7 +44,7 @@ public class GasSystem
     private static ArrayList<TinyMapBuilder<GChunkBlockCoords, Gas>> matrixMapsToCache = new ArrayList<TinyMapBuilder<GChunkBlockCoords, Gas>>(50);
 
     public static int maxCubeTicksPerChunk = 10;
-    static int posponeTickCount = 0, stopPosponePoint = 5;
+    static int posponeTickCount = 0, stopPosponePoint = 10;
 
     public static boolean tryInjectGas(World world, BlockPos pos, Gas gas)
     {
@@ -52,7 +52,7 @@ public class GasSystem
         boolean success = world.isBlockLoaded(pos) && world.isAirBlock(pos);
         if(success)
         {
-            matrix.set(world, pos, gas);
+            matrix.inject(world, pos, gas);
         }
         return success;
     }
@@ -213,9 +213,9 @@ public class GasSystem
             double finalHeat = Substance.finalMixtureHeat(molesThis, (float)this.temperatureK, this.getGramPerMole(),
                     (float)gas.getMoles(), (float)gas.temperatureK, gas.getGramPerMole());
 
-            for(int i = 0; i < count; ++i)
+            for(int i = 0; i < gas.count; ++i)
             {
-                Substance curr = this.subs[i];
+                Substance curr = gas.subs[i];
                 this.addSubstance(curr);
             }
 
@@ -781,7 +781,7 @@ public class GasSystem
 
         public void inject(World world, BlockPos pos, Gas gas)
         {
-            if(gasMap.containsKey(pos))
+            if(hasGas(pos))
             {
                 Gas g = get(pos);
 

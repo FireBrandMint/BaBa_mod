@@ -74,12 +74,12 @@ public class BlockGasses extends BlockBase
         worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
 
         Substance sub = Substance.getSubstance(Substance.OXYGEN_ID);
-        sub.setMoles(gasRandom.nextFloat() * 10f);
-        sub.setTemperatureK(273.15f + gasRandom.nextFloat() * 20.15f);
+        sub.setMoles(20f);
+        sub.setTemperatureK(273.15f + 20.15f);
 
         Substance sub2 = Substance.getSubstance(Substance.PLASMA_ID);
-        sub2.setMoles(gasRandom.nextFloat() * 20f);
-        sub2.setTemperatureK(273.15f + gasRandom.nextFloat() * 20.15f);
+        sub2.setMoles(20f);
+        sub2.setTemperatureK(273.15f + 20.15f);
 
         gas.mixWithSelf(sub);
 

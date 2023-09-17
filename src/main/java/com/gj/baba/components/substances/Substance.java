@@ -42,6 +42,8 @@ public class Substance
         return substancesIndexed.size();
     }
 
+    public static final double gasConstant = 8.31;
+
     //Object part of the class below.
     private boolean indexSet = false;
     private int index;
@@ -109,7 +111,7 @@ public class Substance
         if(updated)
         {
             double n = this.moles;
-            double r = getGasConstant();
+            double r = gasConstant;
             double t = temperatureK;
             double v = volume;
 
@@ -256,13 +258,6 @@ public class Substance
         double finaltemp = (f1this + f1other) / (gramthis + gramother);
 
         return finaltemp + 273.15;
-    }
-
-    //CONSTANTS BELOW
-    //Original standard atmosphere temperature * 100 for the base gas constant.
-    public double getGasConstant()
-    {
-        return 8.31;
     }
 
     public double getTransferPerSuperiorKPA()
