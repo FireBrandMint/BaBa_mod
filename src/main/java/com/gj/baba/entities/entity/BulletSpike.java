@@ -1,10 +1,15 @@
 package com.gj.baba.entities.entity;
 
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityExpBottle;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntitySnowball;
@@ -14,6 +19,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -23,7 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class BulletSpike extends EntityLiving implements IThrowableEntity
+public class BulletSpike extends Entity implements IThrowableEntity
 {
     private static final DataParameter<Float> sizeOrb = EntityDataManager.createKey(BulletSpike.class, DataSerializers.FLOAT);
 
@@ -67,6 +73,11 @@ public class BulletSpike extends EntityLiving implements IThrowableEntity
         this.damage = damage;
     }
 
+    protected void entityInit()
+    {
+
+    }
+
     protected void setOrbSize(float i)
     {
         dataManager.set(sizeOrb, i);
@@ -80,8 +91,6 @@ public class BulletSpike extends EntityLiving implements IThrowableEntity
     @Override
     public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(compound);
-
         NBTTagCompound thisProperties;
 
         if(compound.hasKey("bulletProperties"))
@@ -98,8 +107,6 @@ public class BulletSpike extends EntityLiving implements IThrowableEntity
     @Override
     public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(compound);
-
         if(!compound.hasKey("bulletProperties")) return;
 
         NBTTagCompound bp = compound.getCompoundTag("bulletProperties");
@@ -139,15 +146,17 @@ public class BulletSpike extends EntityLiving implements IThrowableEntity
         Vec3d nowPos = new Vec3d(posX, posY, posZ);
         Vec3d nextPos = new Vec3d(posX + motionX, posY + motionY, posZ + motionZ);
 
-        RayTraceResult rtr = this.world.rayTraceBlocks(nowPos, nextPos, false);
-
-        if(rtr != null)
-        {
-            dead = true;
-        }
-
         if(!this.world.isRemote)
         {
+            if(!world.isAirBlock(new BlockPos(nowPos)) || !world.isAirBlock(new BlockPos(nextPos))) dead = true;
+
+            RayTraceResult rtr = this.world.rayTraceBlocks(nowPos, nextPos, false);
+
+            if(rtr != null)
+            {
+                if(rtr.typeOfHit != RayTraceResult.Type.MISS) dead = true;
+            }
+
             List<Entity> collided = getEntitesColliding();
 
             for(int i = 0; i < collided.size(); ++i)
@@ -161,6 +170,10 @@ public class BulletSpike extends EntityLiving implements IThrowableEntity
                 }
             }
         }
+        else
+        {
+            this.setInvisible(world.isAirBlock(new BlockPos(nowPos)));
+        }
 
         this.setPosition(nextPos.x, nextPos.y, nextPos.z);
 
@@ -169,12 +182,7 @@ public class BulletSpike extends EntityLiving implements IThrowableEntity
 
     private List<Entity> getEntitesColliding ()
     {
-        return this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().shrink(0.4f));
-    }
-
-    @Override
-    public void onLivingUpdate() {
-
+        return this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().shrink(0.1d));
     }
 
     @Override

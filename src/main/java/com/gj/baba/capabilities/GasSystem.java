@@ -34,7 +34,7 @@ import java.util.function.BiConsumer;
 
 public class GasSystem
 {
-    @CapabilityInject(IGasMatrix.class)
+    //@CapabilityInject(IGasMatrix.class)
     public static final Capability<IGasMatrix> GAS_CAPABILITY = null;
 
     public static final EnumFacing capaSide = EnumFacing.UP;

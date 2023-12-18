@@ -7,7 +7,8 @@ public class CapabilityInit
 {
     public static void Initialize()
     {
-        CapabilityManager.INSTANCE.register(GasSystem.IGasMatrix.class, new GasSystem.GasStorage(), new GasSystem.PolutionFactory());
+        //part of the forgotten gas system
+        //CapabilityManager.INSTANCE.register(GasSystem.IGasMatrix.class, new GasSystem.GasStorage(), new GasSystem.PolutionFactory());
 
     }
 }

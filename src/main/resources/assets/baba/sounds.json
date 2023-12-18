@@ -1,0 +1,8 @@
+{
+    "item.melee.stundefault":
+    {
+        "category": "item",
+        "subtitle": "item.melee.stundefault",
+        "sounds": [{ "name": "baba:item/melee/stundefault", "stream": true }]
+    }
+}

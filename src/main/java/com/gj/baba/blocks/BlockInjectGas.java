@@ -3,7 +3,6 @@ package com.gj.baba.blocks;
 import com.gj.baba.blocks.tile_entities.TileEntityGasses;
 import com.gj.baba.capabilities.GasSystem;
 import com.gj.baba.components.substances.Substance;
-import com.gj.baba.init.BlockInit;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
@@ -24,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class BlockGasses extends BlockBase
+public class BlockInjectGas extends BlockBase
 {
     public static Random gasRandom = new Random(System.nanoTime());
 
@@ -38,7 +37,7 @@ public class BlockGasses extends BlockBase
             new BlockPos(0, 0 , -1)
     };
 
-    public BlockGasses(String name, Material material, CreativeTabs tab) {
+    public BlockInjectGas(String name, Material material, CreativeTabs tab) {
 
         super(name, material, tab);
     }
@@ -57,7 +56,6 @@ public class BlockGasses extends BlockBase
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random random)
     {
-
         super.updateTick(worldIn, pos, state, random);
     }
 

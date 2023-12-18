@@ -57,6 +57,7 @@ public class BaBa
         Proxy.InitializeEntityRenderer();
 
         PotionInit.Init();
+        SoundInit.Initialize();
     }
 
     @Mod.EventHandler
@@ -75,7 +76,7 @@ public class BaBa
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void OnAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
     {
-        GasSystem.OnAttachChunkCapabilities(event);
+        //GasSystem.OnAttachChunkCapabilities(event);
     }
 
     @SubscribeEvent
@@ -179,7 +180,7 @@ public class BaBa
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event)
     {
-        GasSystem.OnServerTick(event);
+        //GasSystem.OnServerTick(event);
     }
 
     @SubscribeEvent
@@ -197,7 +198,7 @@ public class BaBa
     public static void chunkLoad(ChunkEvent.Load event)
     {
         if(event.getWorld().isRemote) return;
-        GasSystem.OnChunkLoad(event);
+        //GasSystem.OnChunkLoad(event);
     }
 
     @SubscribeEvent
@@ -210,6 +211,6 @@ public class BaBa
     public static void chunkUnload(ChunkEvent.Unload event)
     {
         if(event.getWorld().isRemote) return;
-        GasSystem.OnChunkUnload(event);
+        //GasSystem.OnChunkUnload(event);
     }
 }

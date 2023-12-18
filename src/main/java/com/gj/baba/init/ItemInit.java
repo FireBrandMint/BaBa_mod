@@ -3,7 +3,6 @@ package com.gj.baba.init;
 import com.gj.baba.Items.*;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +29,6 @@ public class ItemInit
         //ITEM_SATCHEL_SEEDS = new SatchelSeeds("seed_satchel", CreativeTabs.TOOLS);
         MACE_RECHARGING = new RechargingMace("recharging_mace", Item.ToolMaterial.DIAMOND, CreativeTabs.COMBAT);
         BSPIKE_IMAGE = new BSpikeImage("bspike_image", null);
-        TEST_STUN_PROD = new TestStunProd("test_stun_prod", Item.ToolMaterial.DIAMOND, CreativeTabs.COMBAT);
+        TEST_STUN_PROD = new StunProd("stunprod", CreativeTabs.COMBAT);
     }
 }

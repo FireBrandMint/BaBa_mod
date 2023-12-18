@@ -18,6 +18,11 @@ public class Stun extends BasePotion {
 
     public static boolean tryStunTarget(EntityLivingBase target, int hitsTillStun, int stunTime, int stunResistanceOnStun)
     {
+        return tryStunTarget(target, hitsTillStun, stunTime, stunResistanceOnStun, 100);
+    }
+
+    public static boolean tryStunTarget(EntityLivingBase target, int hitsTillStun, int stunTime, int stunResistanceOnStun, int stamLossTime)
+    {
         if(target.isPotionActive(PotionInit.ANTI_STUN)) return false;
 
         if(target.isPotionActive(PotionInit.STAMINA_LOSS))
@@ -28,16 +33,16 @@ public class Stun extends BasePotion {
             if(amp >= hitsTillStun - 1)
             {
                 target.addPotionEffect(new PotionEffect(PotionInit.STUN, stunTime));
-                if(stunResistanceOnStun != 0)target.addPotionEffect(new PotionEffect(PotionInit.ANTI_STUN, stunResistanceOnStun));
+                if(stunResistanceOnStun != 0)target.addPotionEffect(new PotionEffect(PotionInit.ANTI_STUN, stunResistanceOnStun + stamLossTime));
             }
             else
             {
-                target.addPotionEffect(new PotionEffect(PotionInit.STAMINA_LOSS, 100, amp + 1));
+                target.addPotionEffect(new PotionEffect(PotionInit.STAMINA_LOSS, stamLossTime, amp + 1));
             }
         }
         else
         {
-            target.addPotionEffect(new PotionEffect(PotionInit.STAMINA_LOSS, 100));
+            target.addPotionEffect(new PotionEffect(PotionInit.STAMINA_LOSS, stamLossTime, 1));
         }
 
         return true;

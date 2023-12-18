@@ -1,7 +1,8 @@
 package com.gj.baba.init;
 
 import com.gj.baba.BaBa;
-import com.gj.baba.blocks.BlockGasses;
+import com.gj.baba.blocks.BlockExtractionChest;
+import com.gj.baba.blocks.BlockInjectGas;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -18,13 +19,17 @@ public class BlockInit
     public static List<Block> BLOCKS;
 
     //public static Block BLOCK_TEST = new BlockBase("test_block", Material.IRON, CreativeTabs.SEARCH);
-    public static Block BLOCK_GAS;
+    //public static Block BLOCK_GAS;
+
+    public static Block BLOCK_CHEST_EXTRACTION;
 
     public static void Initialize()
     {
         if(ItemInit.ITEMS == null) ItemInit.ITEMS = new ArrayList<Item>();
         BLOCKS = new ArrayList<Block>();
-        BLOCK_GAS = new BlockGasses("gasses_block", Material.IRON, CreativeTabs.BREWING);
+        //part of the forgotten gas system
+        //BLOCK_GAS = new BlockInjectGas("gasses_block", Material.IRON, CreativeTabs.BREWING);
+        BLOCK_CHEST_EXTRACTION = new BlockExtractionChest("extraction_chest", Material.WOOD, CreativeTabs.DECORATIONS);
     }
 
     public static void InitTileEntities()
