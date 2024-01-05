@@ -1,0 +1,10 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "package": "com.gj.baba.patches.mixins",
+  "refmap": "refmap.baba.json",
+  "mixins": [
+    "NaturalRegenPatch"
+  ],
+  "client": [],
+  "server": []
+}

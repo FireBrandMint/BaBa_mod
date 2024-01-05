@@ -5,3 +5,7 @@ item.baba.recharging_mace.name=Recharging Mace
 item.seed_satchel.name=Seed Satchel
 item.baba.stunprod.name=Stun Prod
 tile.extraction_chest.name=Mining Chest
+tile.leaves_blue.name=BlueWorld Leaves
+tile.log_blue.name=BlueWorld Wood
+effect.stun=Stun
+effect.stamina_lost=Lightheaded

@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "baba:blocks/log_blue_top",
+        "side": "baba:blocks/log_blue"
+    }
+}

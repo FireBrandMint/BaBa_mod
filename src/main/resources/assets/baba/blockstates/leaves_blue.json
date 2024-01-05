@@ -1,0 +1,9 @@
+{
+  "variants":
+  {
+    "decay=true,placed=true": { "model": "baba:leaves_blue" },
+    "decay=false,placed=true": { "model": "baba:leaves_blue" },
+    "decay=true,placed=false": { "model": "baba:leaves_blue" },
+    "decay=false,placed=false": { "model": "baba:leaves_blue" }
+  }
+}

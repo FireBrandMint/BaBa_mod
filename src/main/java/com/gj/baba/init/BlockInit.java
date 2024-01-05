@@ -1,8 +1,7 @@
 package com.gj.baba.init;
 
 import com.gj.baba.BaBa;
-import com.gj.baba.blocks.BlockExtractionChest;
-import com.gj.baba.blocks.BlockInjectGas;
+import com.gj.baba.blocks.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,6 +21,8 @@ public class BlockInit
     //public static Block BLOCK_GAS;
 
     public static Block BLOCK_CHEST_EXTRACTION;
+    public static Block LOG_BLUEWORLD;
+    public static BaseLeaves LEAVES_BLUEWORLD;
 
     public static void Initialize()
     {
@@ -30,6 +31,8 @@ public class BlockInit
         //part of the forgotten gas system
         //BLOCK_GAS = new BlockInjectGas("gasses_block", Material.IRON, CreativeTabs.BREWING);
         BLOCK_CHEST_EXTRACTION = new BlockExtractionChest("extraction_chest", Material.WOOD, CreativeTabs.DECORATIONS);
+        LEAVES_BLUEWORLD = new BlueTreeLeaves("leaves_blue", Material.LEAVES, CreativeTabs.DECORATIONS);
+        LOG_BLUEWORLD = new BaseLog("log_blue", Material.WOOD, CreativeTabs.BUILDING_BLOCKS, LEAVES_BLUEWORLD);
     }
 
     public static void InitTileEntities()

@@ -1,3 +1,7 @@
+For now:
+
+0. Patch the FoodStats class to replace OP healing with sponge mixin.
+
 For other mod:
 
 -1. Make cult crown that gives gameplay advantages, but isn't too overpowered as to replace everything else.

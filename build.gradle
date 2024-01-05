@@ -1,23 +1,32 @@
 buildscript {
     repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
+        mavenCentral()
+        flatDir
+                {
+                    dirs 'internal_libs'
+                }
     }
 
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'eclipse'
 
 version = "0.0.1"
 group = "com.gj.baba"
 archivesBaseName = "baba"
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
+String resolved_core_config = 'mixins. .json'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
     mappings channel: 'snapshot', version: '20171003-1.12'
@@ -27,17 +36,65 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            jvmArg("-Dfml.coreMods.load=com.gj.baba.init.PatchInit")
+            arg '-torg.spongepowered.asm.launch.MixinTweaker'
         }
 
         server {
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+            jvmArg("-Dfml.coreMods.load=com.gj.baba.init.PatchInit")
+            arg '-torg.spongepowered.asm.launch.MixinTweaker'
         }
     }
 }
 
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+repositories {
+    maven { url = 'https://repo.spongepowered.org/maven' }
 }
+
+mixin {
+    add sourceSets.main, 'refmap.baba.json'
+    importConfig('mixins.baba.json')
+}
+
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2859'
+    // asm
+    //compile (files('internal_libs/mixingradle-0.7-SNAPSHOT.jar'))
+    embed('org.spongepowered:mixin:0.8.3-SNAPSHOT') {
+        exclude module: 'guava'
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+    }
+    //compile "org.ow2.asm:asm:7.3.1"
+    //compile "org.ow2.asm:asm-tree:7.3.1"
+    //compile "org.ow2.asm:asm-commons:7.3.1"
+    //compile "org.ow2.asm:asm-util:7.3.1"
+
+}
+
+jar {
+    from(configurations.embed.collect {
+        it.isDirectory() ? it : zipTree(it)
+    }) {
+        exclude 'LICENSE.txt', 'META-INF/MANIFSET.MF', 'META-INF/maven/**', 'META-INF/*.RSA', 'META-INF/*.SF'
+    }
+
+    manifest {
+        attributes 'ForceLoadAsMod': 'true'
+        attributes "FMLCorePlugin" : "com.gj.baba.init.PatchInit"
+        attributes "FMLCorePluginContainsFMLMod" : "true"
+        attributes 'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker'
+        attributes 'TweakOrder': '0'
+    }
+}
+
+jar.finalizedBy('reobfJar')
 
 sourceSets { main { output.resourcesDir = output.classesDir } }

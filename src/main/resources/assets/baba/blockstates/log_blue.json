@@ -1,0 +1,9 @@
+{
+    "variants":
+    {
+        "axis=y": { "model": "baba:log_blue" },
+        "axis=z": { "model": "baba:log_blue", "x": 90 },
+        "axis=x": { "model": "baba:log_blue", "x": 90, "y": 90},
+        "axis=none": { "model": "baba:log_blue" }
+    }
+}

@@ -5,6 +5,7 @@ import com.gj.baba.Items.IHasModel;
 import com.gj.baba.init.BlockInit;
 import com.gj.baba.init.ItemInit;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
