@@ -1,8 +1,11 @@
-For now:
+TODO:
 
-0. Patch the FoodStats class to replace OP healing with sponge mixin.
+(DONE) Patch the FoodStats class to replace OP healing with sponge mixin.
 
-For other mod:
+0. Add the [?enemy golem]; hit it while it's charging (arms rotating) to stop it's charge,
+because when charged, it's fast and hits very fast.
+
+May do may not TODO:
 
 -1. Make cult crown that gives gameplay advantages, but isn't too overpowered as to replace everything else.
    - Transmutation.

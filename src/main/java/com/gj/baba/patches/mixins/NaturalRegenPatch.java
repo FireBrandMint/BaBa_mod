@@ -4,6 +4,7 @@ import com.gj.baba.blocks.util.ExtractionChestInventory;
 import com.gj.baba.patches.util.NBTOfPatches;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.text.TextComponentString;
@@ -51,7 +52,7 @@ public abstract class NaturalRegenPatch
         }
 
         FoodStats stats = player.getFoodStats();
-        if(stats.getFoodLevel() > 15 && player.shouldHeal())
+        if(stats.getFoodLevel() > 17 && player.shouldHeal())
         {
 
 
@@ -70,7 +71,9 @@ public abstract class NaturalRegenPatch
                 {
                     cooldown = persistent.getInteger(NBTOfPatches.HEALING_COOLDOWN_TAG);
                 }
-                else cooldown = 80;
+                else cooldown = 100 - (player.experienceLevel >> 1);
+
+                cooldown = Math.max(20, cooldown);
 
                 this.foodTimer = cooldown;
             }
