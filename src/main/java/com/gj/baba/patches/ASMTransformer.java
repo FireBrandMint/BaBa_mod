@@ -1,7 +1,7 @@
 package com.gj.baba.patches;
 
 import com.gj.baba.BaBa;
-import com.gj.baba.patches.mixins.NaturalRegenPatch;
+import com.gj.baba.patches.mixins.PatchNaturalRegen;
 import com.gj.baba.patches.hooks.ShieldPatch;
 import com.gj.baba.patches.util.ASMHelper;
 import org.objectweb.asm.ClassReader;
@@ -129,7 +129,7 @@ public class ASMTransformer implements IClassTransformer
                 InsnList toInsert = new InsnList();
                 toInsert.add(new VarInsnNode(Opcodes.ALOAD, 3));
                 toInsert.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                toInsert.add(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(NaturalRegenPatch.class), "onUpdate", isObfuscated? "(I;Laed;)V" : "(I;LEntityPlayer;)V"));
+                toInsert.add(new MethodInsnNode(Opcodes.INVOKESTATIC, Type.getInternalName(PatchNaturalRegen.class), "onUpdate", isObfuscated? "(I;Laed;)V" : "(I;LEntityPlayer;)V"));
                 toInsert.add(new InsnNode(Opcodes.RETURN));
 
                 method.instructions.insert(target, toInsert);

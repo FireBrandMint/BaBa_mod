@@ -1,0 +1,23 @@
+v0.0.1
+
+- Vanilla balancing:
+
+-- SHIELDS
+--- Shields passively negate 25% of attacks in the player's fov.
+--- Shields no longer go up on right click.
+
+-- FOOD/HUNGER
+--- Food healing is now active above 10 meat sticks.
+--- Food healing is reverted back to pre-1.9 healing.
+--- Food healing is faster at high player levels.
+--- Food depletes faster with powerful player armor.
+--- Starving damage increased twofold.
+--- Starving can kill you when not on peaceful.
+
+-- ENCHANTMENTS
+-- Anvils won't make items with more than 2 enchantments.
+-- Villager mending book trade replaced with rare legal 3 enchantment books.
+
+-- BEDS
+-- Sleeping is removed from the game.
+-- Healing rest is added to the game.

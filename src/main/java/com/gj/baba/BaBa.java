@@ -4,6 +4,7 @@ import com.gj.baba.Items.IHasModel;
 import com.gj.baba.patches.hooks.ShieldPatch;
 import com.gj.baba.components.substances.Substance;
 import com.gj.baba.init.*;
+import com.gj.baba.patches.simple_changes.OPFoodDropLow;
 import com.gj.baba.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -21,6 +22,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -69,6 +71,7 @@ public class BaBa
     {
         CapabilityInit.Initialize();
         Substance.InitializeSubstances();
+        PatchInit.Init(event);
     }
 
     @Mod.EventHandler
@@ -81,6 +84,11 @@ public class BaBa
     public static void OnAttachChunkCapabilities(AttachCapabilitiesEvent<Chunk> event)
     {
         //GasSystem.OnAttachChunkCapabilities(event);
+    }
+    @SubscribeEvent
+    public static void OnAttachEntityCapability(AttachCapabilitiesEvent<Entity> event)
+    {
+        CapabilityInit.AttachEntities(event);
     }
 
     @SubscribeEvent
@@ -157,6 +165,7 @@ public class BaBa
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
         ShieldPatch.onPlayerTick(event);
+        CapabilityInit.onPlayerTick(event);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -173,6 +182,12 @@ public class BaBa
                 event.setCanceled(true);
             }
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void Patch(LivingDropsEvent event)
+    {
+        OPFoodDropLow.Patch(event);
     }
 
     @Mod.EventHandler

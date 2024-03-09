@@ -1,44 +1,33 @@
 package com.gj.baba.entities.render;
 
-import com.gj.baba.BaBa;
 import com.gj.baba.entities.entity.BulletSpike;
+import com.gj.baba.entities.entity.EntityProjectileFlat;
 import com.gj.baba.init.ItemInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderSnowball;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.init.Items;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
-import net.minecraft.client.renderer.entity.RenderFireball;
 
-import javax.annotation.Nullable;
-
-public class RenderBulletSpike extends RenderSnowball<BulletSpike>
+public class RenderProjectileFlat extends RenderSnowball<EntityProjectileFlat>
 {
     RenderItem itemRenderer;
 
-    public RenderBulletSpike(RenderManager manager)
+    public RenderProjectileFlat(RenderManager manager)
     {
         super(manager, ItemInit.BSPIKE_IMAGE, Minecraft.getMinecraft().getRenderItem());
         itemRenderer = Minecraft.getMinecraft().getRenderItem();
     }
 
     @Override
-    public void doRender(BulletSpike entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(EntityProjectileFlat entity, double x, double y, double z, float entityYaw, float partialTicks) {
         /*
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
@@ -60,7 +49,7 @@ public class RenderBulletSpike extends RenderSnowball<BulletSpike>
 
     }
 
-    private void original(BulletSpike entity, double x, double y, double z, float entityYaw, float partialTicks)
+    private void original(EntityProjectileFlat entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         GlStateManager.pushMatrix();
         this.bindEntityTexture(entity);
@@ -74,7 +63,7 @@ public class RenderBulletSpike extends RenderSnowball<BulletSpike>
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.color(1.0f, 1.0f, 1.0f, 0.75f);
 
-        TextureAtlasSprite textureatlassprite = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(ItemInit.BSPIKE_IMAGE);
+        TextureAtlasSprite textureatlassprite = Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(entity.getItemRendered());
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         float f = textureatlassprite.getMinU();
@@ -120,12 +109,12 @@ public class RenderBulletSpike extends RenderSnowball<BulletSpike>
         }
     }
 
-    public static class Factory implements IRenderFactory<BulletSpike>
+    public static class Factory implements IRenderFactory<EntityProjectileFlat>
     {
 
         @Override
-        public Render<? super BulletSpike> createRenderFor(RenderManager manager) {
-            return new RenderBulletSpike(manager);
+        public Render<? super EntityProjectileFlat> createRenderFor(RenderManager manager) {
+            return new RenderProjectileFlat(manager);
         }
     }
 }

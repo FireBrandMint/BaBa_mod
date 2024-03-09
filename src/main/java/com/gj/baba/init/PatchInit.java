@@ -1,6 +1,8 @@
 package com.gj.baba.init;
 
 import com.gj.baba.patches.ASMTransformer;
+import com.gj.baba.patches.simple_changes.FoodStackReduce;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.spongepowered.asm.mixin.*;
@@ -18,6 +20,11 @@ public class PatchInit implements IFMLLoadingPlugin {
     {
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.baba.json");
+    }
+
+    public static void Init(FMLInitializationEvent event)
+    {
+        FoodStackReduce.Patch(event);
     }
     @Override
     public String[] getASMTransformerClass()

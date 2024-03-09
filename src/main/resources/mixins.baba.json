@@ -3,7 +3,10 @@
   "package": "com.gj.baba.patches.mixins",
   "refmap": "refmap.baba.json",
   "mixins": [
-    "NaturalRegenPatch"
+    "PatchNaturalRegen",
+    "PatchSleep",
+    "PatchVillagerBooks",
+    "PatchAnvil"
   ],
   "client": [],
   "server": []

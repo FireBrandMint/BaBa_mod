@@ -49,6 +49,10 @@ public class ShieldPatch
         return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
     }
 
+    //Lets shield be active for the entire tick
+    //and yanks it off at the end of it.
+    //Reason 1: for modded enchantments to work.
+    //Reason 2: to fix a bug where shield block never ends.
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
         if(event.phase == TickEvent.Phase.START) return;
@@ -63,7 +67,8 @@ public class ShieldPatch
         }
     }
 
-    //to makeup for lost shield block, now it has a chance block
+    //To make up for lost shield blocking,
+    //now it has a chance block passively.
     public static void onDamageLiving(LivingAttackEvent event)
     {
         EntityLivingBase entity = event.getEntityLiving();
@@ -154,12 +159,13 @@ public class ShieldPatch
             event.setCanceled(true);
         }
     }
-
+    //Copied method from the original class.
     static void blockUsingShield(EntityLivingBase entity, EntityLivingBase p_190629_1_)
     {
         p_190629_1_.knockBack(entity, 0.5F, entity.posX - p_190629_1_.posX, entity.posZ - p_190629_1_.posZ);
     }
 
+    //Copied method from the original class.
     private static boolean canBlockDamageSource(EntityLivingBase entity, DamageSource damageSourceIn)
     {
         if(damageSourceIn.isUnblockable()) return false;

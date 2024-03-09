@@ -47,6 +47,8 @@ public abstract class BaseLeaves extends BlockBase implements IShearable, IHasMo
     private boolean leavesFancy;
     public static PropertyBool CAN_DECAY = PropertyBool.create("placed");
     public static PropertyBool DECAYING = PropertyBool.create("decay");
+
+
     public BaseLeaves (String name, Material material, CreativeTabs tab)
     {
         super(name, material, tab);
@@ -71,12 +73,46 @@ public abstract class BaseLeaves extends BlockBase implements IShearable, IHasMo
         return new BlockStateContainer(this, new IProperty[] {CAN_DECAY, DECAYING});
     }
 
+    public IBlockState initializeProperties(IBlockState subject)
+    {
+        return subject.withProperty(CAN_DECAY, false).withProperty(DECAYING, false);
+    }
+
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
 
         if(!worldIn.isBlockLoaded(pos) || !state.getValue(CAN_DECAY).booleanValue()) return;
 
-        if(state.getValue(DECAYING)) worldIn.destroyBlock(pos, true);
+        if(state.getValue(DECAYING))
+        {
+            worldIn.destroyBlock(pos, true);
+
+            if(!worldIn.isAreaLoaded(pos, 1)) return;
+            for(int i = -1; i < 2; i+=2)
+            {
+                BlockPos b1 = pos.add(i,0f,0f);
+                IBlockState s1;
+                if(worldIn.isBlockLoaded(b1))
+                {
+                    s1 = worldIn.getBlockState(b1);
+                    if(s1.getBlock() == this) beginLeavesDecay(s1, worldIn, b1);
+                }
+
+                b1 = pos.add(0f, i,0f);
+                if(worldIn.isBlockLoaded(b1))
+                {
+                    s1 = worldIn.getBlockState(b1);
+                    if(s1.getBlock() == this) beginLeavesDecay(s1, worldIn, b1);
+                }
+
+                b1 = pos.add(0f, 0f, i);
+                if(worldIn.isBlockLoaded(b1))
+                {
+                    s1 = worldIn.getBlockState(b1);
+                    if(s1.getBlock() == this) beginLeavesDecay(s1, worldIn, b1);
+                }
+            }
+        }
     }
 
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
@@ -84,11 +120,6 @@ public abstract class BaseLeaves extends BlockBase implements IShearable, IHasMo
         Random rand = world instanceof World ? ((World)world).rand : new Random();
         Item sapling = getSapling();
         if(sapling != null && rand.nextInt(5) >= 4 - fortune) drops.add(new ItemStack(getSapling(), 1 + fortune));
-    }
-
-    public IBlockState initializeProperties(IBlockState subject)
-    {
-        return subject.withProperty(CAN_DECAY, false).withProperty(DECAYING, false);
     }
 
     @Override
@@ -168,7 +199,11 @@ public abstract class BaseLeaves extends BlockBase implements IShearable, IHasMo
 
     public void beginLeavesDecay(IBlockState state, World world, BlockPos pos)
     {
-        if (!state.getValue(DECAYING).booleanValue())
+        if (state.getValue(CAN_DECAY).booleanValue() && !state.getValue(DECAYING).booleanValue())
+        {
             world.setBlockState(pos, state.withProperty(DECAYING, true));
+        }
+
+
     }
 }

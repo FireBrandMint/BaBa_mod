@@ -104,13 +104,18 @@ public class EntityGolemCharge extends EntityMob
         if(success && cTime > 0 && cTime < getChargeTimeLimit())
         {
             setChargeTime(1);
-            this.playSound(SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, 1f, 0.7f);
+            this.playSound(SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, 1f, 0.4f + 0.2f * rand.nextFloat());
         }
         else
         {
-            this.playSound(SoundEvents.ENTITY_ITEM_BREAK, 0.4f, 0.5f);
+            this.playSound(SoundEvents.ENTITY_ITEM_BREAK, 0.4f, 0.4f + 0.2f * rand.nextFloat());
         }
         return success;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return null;
     }
 
     @Override

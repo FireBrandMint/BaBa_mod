@@ -57,9 +57,9 @@ public class BaseLog extends BlockRotatedPillar implements IHasModel
         int i = 4;
         int j = 5;
 
-        if (worldIn.isAreaLoaded(pos.add(-5, -5, -5), pos.add(5, 5, 5)))
+        if (worldIn.isAreaLoaded(pos.add(-1, -1, -1), pos.add(1, 1, 1)))
         {
-            for (BlockPos blockpos : BlockPos.getAllInBox(pos.add(-4, -4, -4), pos.add(4, 4, 4)))
+            for (BlockPos blockpos : BlockPos.getAllInBox(pos.add(-1, -1, -1), pos.add(1, 1, 1)))
             {
                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
